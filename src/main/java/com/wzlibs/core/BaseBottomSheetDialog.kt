@@ -28,13 +28,17 @@ abstract class BaseBottomSheetDialog<T : ViewBinding> : BottomSheetDialogFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (registerEventBus) EventBus.getDefault().register(this)
-        if (transparentBackground) {
-            dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-        }
         initObserver()
         initConfig()
         initListener()
         initTask()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (transparentBackground) {
+            dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        }
     }
 
     override fun onDestroyView() {

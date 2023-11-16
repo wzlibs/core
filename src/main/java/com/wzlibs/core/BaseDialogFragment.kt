@@ -31,6 +31,14 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (registerEventBus) EventBus.getDefault().register(this)
+        initConfig(savedInstanceState)
+        initObserver()
+        initListener()
+        initTask()
+    }
+
+    override fun onStart() {
+        super.onStart()
         if (transparentBackground) {
             dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
@@ -43,10 +51,6 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             )
         }
-        initConfig(savedInstanceState)
-        initObserver()
-        initListener()
-        initTask()
     }
 
     override fun onDestroyView() {
