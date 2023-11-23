@@ -12,7 +12,7 @@ abstract class BaseCoreFragment<T : ViewBinding> : Fragment() {
 
     open val binding by lazy { bindingView() }
 
-    open var registerEventBus = false
+    open val registerEventBus = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

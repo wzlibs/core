@@ -4,9 +4,10 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
+import com.zeugmasolutions.localehelper.LocaleAwareCompatActivity
 import org.greenrobot.eventbus.EventBus
 
-abstract class BaseCoreActivity<T : ViewBinding> : AppCompatActivity() {
+abstract class BaseCoreActivity<T : ViewBinding> : LocaleAwareCompatActivity() {
 
     open val binding by lazy { bindingView() }
 
