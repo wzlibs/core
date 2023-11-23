@@ -1,5 +1,6 @@
 package com.wzlibs.core
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,7 +31,7 @@ abstract class BaseCoreFragment<T : ViewBinding> : Fragment() {
     }
 
     override fun onDestroyView() {
-        if (registerEventBus) EventBus.getDefault().register(this)
+        if (registerEventBus) EventBus.getDefault().unregister(this)
         release()
         super.onDestroyView()
     }
@@ -50,5 +51,7 @@ abstract class BaseCoreFragment<T : ViewBinding> : Fragment() {
     fun onFragmentBackPressed(){
         (requireActivity() as BaseCoreActivity<*>).onActivityBackPressed()
     }
+
+    open fun navigation(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigation(intent)
 
 }

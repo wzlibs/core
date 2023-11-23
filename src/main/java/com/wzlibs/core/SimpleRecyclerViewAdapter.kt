@@ -22,8 +22,8 @@ abstract class SimpleRecyclerViewAdapter<T, V : ViewBinding>(
 
     override fun onBindViewHolder(holder: BaseViewHolder<T, V>, position: Int) {
         val data = mDataList[position]
-        bindData(holder.binding, data, position, holder.binding.root.context)
         onItemSelect(holder, data)
+        bindData(holder.binding, data, position, holder.binding.root.context)
     }
 
     open fun onItemSelect(holder: BaseViewHolder<T, V>, data: T) {

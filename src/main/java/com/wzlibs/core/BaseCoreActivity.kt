@@ -1,13 +1,13 @@
 package com.wzlibs.core
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
-import com.zeugmasolutions.localehelper.LocaleAwareCompatActivity
 import org.greenrobot.eventbus.EventBus
 
-abstract class BaseCoreActivity<T : ViewBinding> : LocaleAwareCompatActivity() {
+abstract class BaseCoreActivity<T : ViewBinding> : AppCompatActivity() {
 
     open val binding by lazy { bindingView() }
 
@@ -47,12 +47,16 @@ abstract class BaseCoreActivity<T : ViewBinding> : LocaleAwareCompatActivity() {
 
     abstract fun bindingView(): T
 
-    open fun onActivityBackPressed(){
+    open fun onActivityBackPressed() {
         if (supportFragmentManager.backStackEntryCount == 0) {
             finish()
         } else {
             supportFragmentManager.popBackStack()
         }
+    }
+
+    open fun navigation(intent: Intent) {
+        startActivity(intent)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.wzlibs.core
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -68,4 +69,6 @@ abstract class BaseBottomSheetDialog<T : ViewBinding> : BottomSheetDialogFragmen
     open fun release() {}
 
     abstract fun bindingView(): T
+
+    open fun navigation(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigation(intent)
 }
