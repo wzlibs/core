@@ -55,8 +55,12 @@ abstract class BaseCoreActivity<T : ViewBinding> : AppCompatActivity() {
         }
     }
 
-    open fun navigation(intent: Intent) {
+    open fun navigateTo(intent: Intent) {
         startActivity(intent)
+    }
+
+    open fun navigateTo(navigation: Navigation) {
+        navigation.transaction()
     }
 
 }

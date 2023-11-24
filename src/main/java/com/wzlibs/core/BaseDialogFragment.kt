@@ -80,6 +80,6 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
         }
     }
 
-    open fun navigation(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigation(intent)
+    open fun navigateTo(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigateTo(intent)
 
 }

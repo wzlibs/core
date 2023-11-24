@@ -14,7 +14,7 @@ class Navigation private constructor(
     private var shouldAddToBackStack: Boolean = true
 ) {
 
-    private fun transaction() {
+    fun transaction() {
         val transaction = fragmentManager.beginTransaction()
         if (isAddFragment) {
             transaction.add(containerViewId, fragment, fragmentTag)
@@ -51,6 +51,6 @@ class Navigation private constructor(
             tag,
             backStackName,
             shouldAddToBackStack
-        ).apply { transaction() }
+        )
     }
 }

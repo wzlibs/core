@@ -70,5 +70,5 @@ abstract class BaseBottomSheetDialog<T : ViewBinding> : BottomSheetDialogFragmen
 
     abstract fun bindingView(): T
 
-    open fun navigation(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigation(intent)
+    open fun navigateTo(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigateTo(intent)
 }

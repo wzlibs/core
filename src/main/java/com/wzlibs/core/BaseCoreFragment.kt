@@ -52,6 +52,6 @@ abstract class BaseCoreFragment<T : ViewBinding> : Fragment() {
         (requireActivity() as BaseCoreActivity<*>).onActivityBackPressed()
     }
 
-    open fun navigation(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigation(intent)
+    open fun navigateTo(intent: Intent) = (requireActivity() as BaseCoreActivity<*>).navigateTo(intent)
 
 }
