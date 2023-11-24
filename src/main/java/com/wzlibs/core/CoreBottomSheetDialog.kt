@@ -1,30 +1,27 @@
 package com.wzlibs.core
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import org.greenrobot.eventbus.EventBus
 
-abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
+abstract class CoreBottomSheetDialog<T : ViewBinding> : BottomSheetDialogFragment() {
 
     open val binding by lazy { bindingView() }
 
-    open val registerEventBus = false
-
-    open val fullScreen = false
+    open var registerEventBus = false
 
     open val transparentBackground: Boolean = false
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         return binding.root
     }
@@ -32,8 +29,8 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (registerEventBus) EventBus.getDefault().register(this)
-        initConfig(savedInstanceState)
         initObserver()
+        initConfig()
         initListener()
         initTask()
     }
@@ -41,16 +38,7 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
     override fun onStart() {
         super.onStart()
         if (transparentBackground) {
-            dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        }
-        if (fullScreen) {
-            dialog?.window?.setLayout(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT
-            )
-        } else {
-            dialog?.window?.setLayout(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            )
+            dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         }
     }
 
@@ -60,9 +48,19 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
         super.onDestroyView()
     }
 
+    override fun show(manager: FragmentManager, tag: String?) {
+        manager.findFragmentByTag(tag).let { fragment ->
+            fragment ?: let {
+                manager.beginTransaction().let { transition ->
+                    this.show(transition, tag)
+                }
+            }
+        }
+    }
+
     open fun initObserver() {}
 
-    open fun initConfig(savedInstanceState: Bundle?) {}
+    open fun initConfig() {}
 
     open fun initListener() {}
 
@@ -72,14 +70,5 @@ abstract class BaseDialogFragment<T : ViewBinding> : DialogFragment() {
 
     abstract fun bindingView(): T
 
-    override fun show(manager: FragmentManager, tag: String?) {
-        manager.findFragmentByTag(tag).let { fragment ->
-            fragment ?: let {
-                super.show(manager, tag)
-            }
-        }
-    }
-
     open fun navigateTo(intent: Intent) = (requireActivity() as CoreActivity<*>).navigateTo(intent)
-
 }

@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 
-abstract class SimpleRecyclerViewAdapter<T, V : ViewBinding>(
+abstract class CoreRecyclerViewAdapter<T, V : ViewBinding>(
     val mDataList: MutableList<T> = mutableListOf()
-) : RecyclerView.Adapter<BaseViewHolder<T, V>>() {
+) : RecyclerView.Adapter<CoreViewHolder<T, V>>() {
 
     var listPrevious = arrayListOf<T>()
 
@@ -16,17 +16,17 @@ abstract class SimpleRecyclerViewAdapter<T, V : ViewBinding>(
 
     var currentItem: T? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<T, V> {
-        return BaseViewHolder(providesItemViewBinding(parent, viewType))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CoreViewHolder<T, V> {
+        return CoreViewHolder(providesItemViewBinding(parent, viewType))
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<T, V>, position: Int) {
+    override fun onBindViewHolder(holder: CoreViewHolder<T, V>, position: Int) {
         val data = mDataList[position]
         onItemSelect(holder, data)
         bindData(holder.binding, data, position, holder.binding.root.context)
     }
 
-    open fun onItemSelect(holder: BaseViewHolder<T, V>, data: T) {
+    open fun onItemSelect(holder: CoreViewHolder<T, V>, data: T) {
         holder.binding.root.setOnClickListener {
             val oldPos = mDataList.indexOf(currentItem)
             val newPos = mDataList.indexOf(data)

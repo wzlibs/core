@@ -35,6 +35,7 @@ abstract class CoreActivity<T : ViewBinding> : LocaleAwareCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        loadAds()
         if (registerEventBus) EventBus.getDefault().register(this)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -47,6 +48,11 @@ abstract class CoreActivity<T : ViewBinding> : LocaleAwareCompatActivity() {
         initListener()
         initTask()
         initAds()
+    }
+
+    private fun loadAds() {
+        interstitialAdManager.load()
+        nativeManager.load()
     }
 
     private fun initAds() {

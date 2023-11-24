@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 
 /** BaseViewHolder is an abstract class for structuring the base view holder class. */
-open class BaseViewHolder<T, V : ViewBinding>(val binding: V) :
+open class CoreViewHolder<T, V : ViewBinding>(val binding: V) :
     RecyclerView.ViewHolder(binding.root) {
 
     val context: Context = binding.root.context
