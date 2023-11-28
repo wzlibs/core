@@ -1,6 +1,7 @@
 package com.wzlibs.ggadmob.native_ad
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest

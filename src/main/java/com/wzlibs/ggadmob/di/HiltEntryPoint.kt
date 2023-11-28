@@ -1,6 +1,7 @@
 package com.wzlibs.ggadmob.di
 
 import com.wzlibs.ggadmob.ad_configs.AdmobConfigShared
+import com.wzlibs.ggadmob.ad_interstitial.InterstitialAdManager
 import com.wzlibs.ggadmob.managers.ids.BannerAdsIdManager
 import com.wzlibs.ggadmob.managers.ids.InterstitialAdsIdManager
 import com.wzlibs.ggadmob.managers.ids.NativeAdsIdManager
@@ -23,4 +24,5 @@ interface HiltEntryPoint {
     fun nativeAdsIdManager(): NativeAdsIdManager
     fun admobConfigShared(): AdmobConfigShared
     fun nativeManager(): NativeManager
+    fun interstitialAdManager(): InterstitialAdManager
 }
