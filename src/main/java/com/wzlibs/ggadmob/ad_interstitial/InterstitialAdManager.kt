@@ -1,4 +1,4 @@
-package com.wzlibs.ggadmob.interstitial_ad
+package com.wzlibs.ggadmob.ad_interstitial
 
 import android.app.Activity
 import android.content.Context
@@ -11,10 +11,11 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.wzlibs.ggadmob.managers.GoogleMobileAdsConsentManager
 import com.wzlibs.ggadmob.managers.LoadingGapManager
 import com.wzlibs.ggadmob.ad_configs.AdmobConfigShared
-import com.wzlibs.ggadmob.ad_configs.AdmobConfig.isAdShowingFullScreen
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.INTERSTITIAL_AD_VALID_TIME
+import com.wzlibs.ggadmob.di.HiltEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 
-class InterstitialAdManager private constructor(
+class InterstitialAdManager constructor(
     private val context: Context,
     private val sharedPref: AdmobConfigShared,
     private val loadingGapManager: LoadingGapManager
@@ -23,30 +24,22 @@ class InterstitialAdManager private constructor(
     private var isLoading: Boolean = false
     private var lasTimeLoaded = 0L
     private var lasTimeDismissAd = 0L
-    private lateinit var interHighFloorId: String
-    private lateinit var interMediumFloorId: String
-    private lateinit var interAllPricesId: String
-    private lateinit var interstitialAds: String
-
-    private fun interHighFloorId(id: String) = apply { interHighFloorId = id }
-
-    private fun interMediumFloorId(id: String) = apply { interMediumFloorId = id }
-
-    private fun interAllPricesId(id: String) = apply { interAllPricesId = id }
-
-    private fun interstitialAds(id: String) = apply { interstitialAds = id }
 
     fun isAdAlready(): Boolean = interstitialAd != null
 
+    private val idsManager =
+        EntryPointAccessors.fromApplication(context, HiltEntryPoint::class.java)
+            .interstitialAdsIdManager()
+
     fun load() {
         if (sharedPref.monetization) {
-            load(interHighFloorId) {
-                load(interMediumFloorId) {
-                    load(interAllPricesId)
+            load(idsManager.getHighFloorId()) {
+                load(idsManager.getMediumFloorId()) {
+                    load(idsManager.getAllPricesId())
                 }
             }
         } else {
-            load(interstitialAds)
+            load(idsManager.getNormalId())
         }
     }
 
@@ -56,7 +49,8 @@ class InterstitialAdManager private constructor(
         if (!loadingGapManager.isOverGap()) return
         if (!GoogleMobileAdsConsentManager.getInstance(context).canRequestAds) return
         isLoading = true
-        InterstitialAd.load(context,
+        InterstitialAd.load(
+            context,
             id,
             AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
@@ -95,7 +89,7 @@ class InterstitialAdManager private constructor(
     }
 
     private fun shouldShow(): Boolean {
-        if (isAdShowingFullScreen) return false
+        if (sharedPref.isAdShowFullScreen) return false
         if (sharedPref.isUnlockedAd) return false
         if (interstitialAd == null) {
             load()
@@ -125,9 +119,10 @@ class InterstitialAdManager private constructor(
     }
 
     private fun setAdListener(ad: InterstitialAd, onTransition: () -> Unit) {
+        sharedPref.isAdShowFullScreen = true
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
-                isAdShowingFullScreen = false
+                sharedPref.isAdShowFullScreen = false
                 super.onAdDismissedFullScreenContent()
                 onTransition.invoke()
                 lasTimeDismissAd = System.currentTimeMillis()
@@ -135,44 +130,18 @@ class InterstitialAdManager private constructor(
 
             override fun onAdShowedFullScreenContent() {
                 super.onAdShowedFullScreenContent()
-                isAdShowingFullScreen = true
                 interstitialAd = null
                 load()
             }
 
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 super.onAdFailedToShowFullScreenContent(p0)
-                isAdShowingFullScreen = false
+                sharedPref.isAdShowFullScreen = false
                 load()
                 onTransition.invoke()
                 lasTimeDismissAd = System.currentTimeMillis()
             }
         }
-    }
-
-    class Builder(private val context: Context, private val sharedPref: AdmobConfigShared) {
-        private var interHighFloorId: String?= null
-        private var interMediumFloorId: String?= null
-        private var interAllPricesId: String?= null
-        private var interstitialAds: String?= null
-
-        fun interHighFloorId(id: String) = apply { interHighFloorId = id }
-
-        fun interMediumFloorId(id: String) = apply { interMediumFloorId = id }
-
-        fun interAllPricesId(id: String) = apply { interAllPricesId = id }
-
-        fun interstitialAds(id: String) = apply { interstitialAds = id }
-
-        fun build(): InterstitialAdManager {
-            val manager = InterstitialAdManager(context, sharedPref, LoadingGapManager(sharedPref))
-            interHighFloorId?.let { manager.interHighFloorId(it) }
-            interMediumFloorId?.let { manager.interMediumFloorId(it) }
-            interAllPricesId?.let { manager.interAllPricesId(it) }
-            interstitialAds?.let { manager.interstitialAds(it) }
-            return manager
-        }
-
     }
 
 }

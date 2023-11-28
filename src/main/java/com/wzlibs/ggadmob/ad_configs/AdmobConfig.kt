@@ -2,22 +2,6 @@ package com.wzlibs.ggadmob.ad_configs
 
 object AdmobConfig {
 
-    var isBuildDebug: Boolean? = null
-
-    var isAdShowingFullScreen = false
-
-    private lateinit var bannerId: String
-
-    private lateinit var interstitialId: String
-
-    private lateinit var interstitialRewardId: String
-
-    private lateinit var rewardId: String
-
-    private lateinit var nativeId: String
-
-    private lateinit var openId: String
-
     const val INTERSTITIAL_AD_VALID_TIME = 3600000
 
     const val DEFAULT_LOADING_TIME_GAP = 5000L
@@ -31,6 +15,8 @@ object AdmobConfig {
     const val DEFAULT_POPUP_ADS_GAP = 60000L
 
     const val DEFAULT_NUMBER_NATIVE_NEED_LOAD = 2
+
+    const val DEFAULT_USE_MONETIZATION = false
 
     const val KEY_LOADING_TIME_GAP = "loading_time_gap"
 
@@ -48,85 +34,8 @@ object AdmobConfig {
 
     const val NUMBER_NATIVE_NEED_LOAD_KEY = "number_native_need_load_key"
 
-    fun getBannerId(): String {
-        checkBuildType()
-        return if (isBuildDebug == true) {
-            "ca-app-pub-3940256099942544/6300978111"
-        } else {
-            bannerId
-        }
-    }
+    const val KEY_AD_SHOW_FULL_SCREEN = "key_ad_show_full_screen"
 
-    fun getInterstitialId(): String {
-        checkBuildType()
-        return if (isBuildDebug == true) {
-            "ca-app-pub-3940256099942544/1033173712"
-        } else {
-            interstitialId
-        }
-    }
-
-    fun getInterstitialRewardId(): String {
-        checkBuildType()
-        return if (isBuildDebug == true) {
-            "ca-app-pub-3940256099942544/5354046379"
-        } else {
-            interstitialRewardId
-        }
-    }
-
-    fun getRewardId(): String {
-        checkBuildType()
-        return if (isBuildDebug == true) {
-            "ca-app-pub-3940256099942544/5224354917"
-        } else {
-            rewardId
-        }
-    }
-
-    fun getNativeId(): String {
-        checkBuildType()
-        return if (isBuildDebug == true) {
-            "ca-app-pub-3940256099942544/2247696110"
-        } else {
-            nativeId
-        }
-    }
-
-    fun getOpenId(): String {
-        checkBuildType()
-        return if (isBuildDebug == true) {
-            "ca-app-pub-3940256099942544/3419835294"
-        } else {
-            openId
-        }
-    }
-
-    fun setBannerId(id: String) {
-        bannerId = id
-    }
-
-    fun setInterstitialId(id: String) {
-        interstitialId = id
-    }
-
-    fun setInterstitialRewardId(id: String) {
-        interstitialRewardId = id
-    }
-
-    fun setRewardId(id: String) {
-        rewardId = id
-    }
-
-    fun setNativeId(id: String) {
-        nativeId = id
-    }
-
-    fun setOpenId(id: String) {
-        openId = id
-    }
-
-    private fun checkBuildType() = isBuildDebug ?: throw Exception("unknown build type")
-
+    const val KEY_USE_MONETIZATION= "key_use_monetization"
 
 }

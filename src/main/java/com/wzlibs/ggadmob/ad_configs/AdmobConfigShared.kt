@@ -8,11 +8,14 @@ import com.wzlibs.ggadmob.ad_configs.AdmobConfig.DEFAULT_LOADING_TIME_GAP
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.DEFAULT_MAX_LOADING_TIME_GAP
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.DEFAULT_NUMBER_NATIVE_NEED_LOAD
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.DEFAULT_POPUP_ADS_GAP
+import com.wzlibs.ggadmob.ad_configs.AdmobConfig.DEFAULT_USE_MONETIZATION
+import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_AD_SHOW_FULL_SCREEN
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_IGNORE_LOADING_GAP_NUMBER
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_INTERSTITIAL_AD_SHOW_GAP
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_IS_UNLOCKED_ADS
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_LOADING_TIME_GAP
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_MAX_LOADING_TIME_GAP
+import com.wzlibs.ggadmob.ad_configs.AdmobConfig.KEY_USE_MONETIZATION
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.MONETIZATION_KEY
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.NUMBER_NATIVE_NEED_LOAD_KEY
 import com.wzlibs.ggadmob.ad_configs.AdmobConfig.POPUP_ADS_GAP_KEY
@@ -54,5 +57,13 @@ class AdmobConfigShared(private val context: Context) {
     var numberNativeNeedLoad: Int
         get() = sharedPref.getInt(NUMBER_NATIVE_NEED_LOAD_KEY, DEFAULT_NUMBER_NATIVE_NEED_LOAD)
         set(value) = editor.putInt(NUMBER_NATIVE_NEED_LOAD_KEY, value).apply()
+
+    var isAdShowFullScreen: Boolean
+        get() = sharedPref.getBoolean(KEY_AD_SHOW_FULL_SCREEN, false)
+        set(value) = editor.putBoolean(KEY_AD_SHOW_FULL_SCREEN, value).apply()
+
+    var useMonetization: Boolean
+        get() = sharedPref.getBoolean(KEY_USE_MONETIZATION, DEFAULT_USE_MONETIZATION)
+        set(value) = editor.putBoolean(KEY_USE_MONETIZATION, value).apply()
 
 }

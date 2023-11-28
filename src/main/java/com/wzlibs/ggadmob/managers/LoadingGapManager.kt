@@ -1,5 +1,6 @@
 package com.wzlibs.ggadmob.managers
 
+import android.util.Log
 import com.wzlibs.ggadmob.ad_configs.AdmobConfigShared
 
 class LoadingGapManager(private val sharedPref: AdmobConfigShared) {
@@ -10,7 +11,7 @@ class LoadingGapManager(private val sharedPref: AdmobConfigShared) {
     private var failedLoadLastTime = 0L
     private var failedLoadNumber = 0L
 
-    fun isOverGap(): Boolean = System.currentTimeMillis() - failedLoadLastTime > loadingTimeGap
+    fun isOverGap(): Boolean = (System.currentTimeMillis() - failedLoadLastTime > loadingTimeGap)
 
     fun resetGap() {
         failedLoadLastTime = 0

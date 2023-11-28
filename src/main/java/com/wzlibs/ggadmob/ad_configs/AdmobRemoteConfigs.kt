@@ -18,6 +18,8 @@ object AdmobRemoteConfigs {
 
     private var numberNativeNeedLoad: Int = AdmobConfig.DEFAULT_NUMBER_NATIVE_NEED_LOAD
 
+    private var useMonetization: Boolean = AdmobConfig.DEFAULT_USE_MONETIZATION
+
     fun unlockedAds(value: Boolean) = apply { unlockedAds = value }
 
     fun loadingTimeGap(value: Long) = apply { loadingTimeGap = value }
@@ -32,6 +34,8 @@ object AdmobRemoteConfigs {
 
     fun numberNativeNeedLoad(value: Int) = apply { numberNativeNeedLoad = value }
 
+    fun useMonetization(value: Boolean) = apply { useMonetization = value }
+
     fun applyConfig(context: Context) {
         val admobConfigShared = AdmobConfigShared(context)
         admobConfigShared.isUnlockedAd = unlockedAds
@@ -41,6 +45,7 @@ object AdmobRemoteConfigs {
         admobConfigShared.ignoreLoadingGapNumber = ignoreLoadingGapNumber
         admobConfigShared.popupAdsGap = popupAdsGap
         admobConfigShared.numberNativeNeedLoad = numberNativeNeedLoad
+        admobConfigShared.useMonetization = useMonetization
     }
 
 }

@@ -14,18 +14,16 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.wzlibs.ggadmob.ad_configs.AdmobConfigShared
-import com.wzlibs.ggadmob.ad_configs.AdmobConfig.isAdShowingFullScreen
+import com.wzlibs.ggadmob.di.HiltEntryPoint
 import com.wzlibs.ggadmob.managers.GoogleMobileAdsConsentManager
+import dagger.hilt.android.EntryPointAccessors
 import java.util.Date
 
-class OpenAdManager(
-    private val application: Application,
-    private val id: String,
-) : Application.ActivityLifecycleCallbacks, LifecycleObserver {
+class OpenAdManager(private val application: Application) : Application.ActivityLifecycleCallbacks,
+    LifecycleObserver {
 
     private var appOpenAd: AppOpenAd? = null
     private var isLoadingAd = false
-    private var isShowingAd = false
     private var loadTime: Long = 0
 
     private val shared by lazy { AdmobConfigShared(application) }
@@ -34,6 +32,10 @@ class OpenAdManager(
     private val googleMobileAdsConsentManager: GoogleMobileAdsConsentManager by lazy {
         GoogleMobileAdsConsentManager.getInstance(application)
     }
+
+    private val idsManager =
+        EntryPointAccessors.fromApplication(application, HiltEntryPoint::class.java)
+            .openAdsIdManager()
 
     init {
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
@@ -54,7 +56,7 @@ class OpenAdManager(
         if (isAdAvailable()) return
         isLoadingAd = true
         val request = AdRequest.Builder().build()
-        AppOpenAd.load(context, id, request,
+        AppOpenAd.load(context, idsManager.getNormalId(), request,
             object : AppOpenAd.AppOpenAdLoadCallback() {
                 override fun onAdLoaded(ad: AppOpenAd) {
                     appOpenAd = ad
@@ -84,10 +86,12 @@ class OpenAdManager(
             override fun onShowAdComplete() {}
         })
 
-    private fun showAdIfAvailable(activity: Activity, onShowAdCompleteListener: OnShowAdCompleteListener) {
-        if (isShowingAd) return
+    private fun showAdIfAvailable(
+        activity: Activity,
+        onShowAdCompleteListener: OnShowAdCompleteListener
+    ) {
         if (shared.isUnlockedAd) return
-        if (isAdShowingFullScreen) return
+        if (shared.isAdShowFullScreen) return
         if (!isAdAvailable()) {
             onShowAdCompleteListener.onShowAdComplete()
             if (googleMobileAdsConsentManager.canRequestAds) {
@@ -98,9 +102,8 @@ class OpenAdManager(
         appOpenAd?.fullScreenContentCallback =
             object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    isAdShowingFullScreen = false
+                    shared.isAdShowFullScreen = false
                     appOpenAd = null
-                    isShowingAd = false
                     onShowAdCompleteListener.onShowAdComplete()
                     if (googleMobileAdsConsentManager.canRequestAds) {
                         loadAd(activity)
@@ -108,20 +111,15 @@ class OpenAdManager(
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    isAdShowingFullScreen = false
+                    shared.isAdShowFullScreen = false
                     appOpenAd = null
-                    isShowingAd = false
                     onShowAdCompleteListener.onShowAdComplete()
                     if (googleMobileAdsConsentManager.canRequestAds) {
                         loadAd(activity)
                     }
                 }
-
-                override fun onAdShowedFullScreenContent() {
-                    isAdShowingFullScreen = true
-                }
             }
-        isShowingAd = true
+        shared.isAdShowFullScreen = true
         appOpenAd?.show(activity)
     }
 
@@ -132,7 +130,7 @@ class OpenAdManager(
     override fun onActivityCreated(p0: Activity, p1: Bundle?) {}
 
     override fun onActivityStarted(activity: Activity) {
-        if (!isShowingAd) {
+        if (!shared.isAdShowFullScreen) {
             currentActivity = activity
         }
     }

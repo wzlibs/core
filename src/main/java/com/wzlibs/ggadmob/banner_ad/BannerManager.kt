@@ -11,15 +11,19 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
+import com.wzlibs.ggadmob.di.HiltEntryPoint
 import com.wzlibs.ggadmob.managers.GoogleMobileAdsConsentManager
+import dagger.hilt.android.EntryPointAccessors
 
 class BannerManager(
     private val activity: AppCompatActivity,
-    private val id: String,
     private val areaBanner: ViewGroup
 ) : DefaultLifecycleObserver {
 
     private lateinit var adView: AdView
+    private val idsManager =
+        EntryPointAccessors.fromApplication(activity, HiltEntryPoint::class.java)
+            .bannerAdsIdManager()
 
     init {
         activity.lifecycle.addObserver(this)
@@ -64,7 +68,7 @@ class BannerManager(
         }
 
     private fun loadBanner() {
-        adView.adUnitId = id
+        adView.adUnitId = idsManager.getNormalId()
         adView.setAdSize(adSize)
         val adRequest = AdRequest.Builder().build()
         adView.adListener = object : AdListener() {

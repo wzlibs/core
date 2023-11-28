@@ -11,19 +11,16 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.wzlibs.ggadmob.managers.GoogleMobileAdsConsentManager
 import com.wzlibs.ggadmob.ad_configs.AdmobConfigShared
-import com.wzlibs.ggadmob.ad_configs.AdmobConfig.isAdShowingFullScreen
+import com.wzlibs.ggadmob.di.HiltEntryPoint
+import dagger.hilt.android.EntryPointAccessors
 
-class RewardAdManager private constructor(
+class RewardAdManager constructor(
     private val context: Context,
     private val sharedPref: AdmobConfigShared
 ) {
     private var rewardedAd: RewardedAd? = null
     private var isLoading: Boolean = false
     private var lasTimeLoaded = 0L
-    private lateinit var highFloorId: String
-    private lateinit var mediumFloorId: String
-    private lateinit var allPricesId: String
-    private lateinit var normalId: String
 
     var onUserEarnedRewardListener: IOnUserEarnedRewardListener? = null
     var onAdDismissedFullScreenContent: IOnAdDismissedFullScreenContent? = null
@@ -31,28 +28,23 @@ class RewardAdManager private constructor(
     var onAdFailedToShowFullScreenContent: IOnAdFailedToShowFullScreenContent? = null
 
     private var rewardRequest: Any? = null
-
-    fun highFloorId(id: String) = apply { highFloorId = id }
-
-    fun mediumFloorId(id: String) = apply { mediumFloorId = id }
-
-    fun allPricesId(id: String) = apply { allPricesId = id }
-
-    fun normalId(id: String) = apply { normalId = id }
-
-    fun isAdAlready(): Boolean = rewardedAd != null
+    private val idsManager =
+        EntryPointAccessors.fromApplication(context, HiltEntryPoint::class.java)
+            .rewardAdsIdManager()
 
     fun load() {
         if (sharedPref.monetization) {
-            load(highFloorId) {
-                load(mediumFloorId) {
-                    load(allPricesId)
+            load(idsManager.getHighFloorId()) {
+                load(idsManager.getMediumFloorId()) {
+                    load(idsManager.getAllPricesId())
                 }
             }
         } else {
-            load(normalId)
+            load(idsManager.getNormalId())
         }
     }
+
+    fun isAdAlready(): Boolean = rewardedAd != null
 
     private fun load(id: String, onContinueLoading: (() -> Unit)? = null) {
         if (isLoading) return
@@ -95,32 +87,17 @@ class RewardAdManager private constructor(
         }
     }
 
-    fun forceShow(activity: Activity, onTransition: () -> Unit) {
-        val ad = rewardedAd
-        rewardedAd = null
-        if (ad == null) {
-            onTransition.invoke()
-            load()
-        } else {
-            setAdListener(ad)
-            ad.show(activity,
-                OnUserEarnedRewardListener {
-                    onUserEarnedRewardListener?.onUserEarnedRewardListener(rewardRequest)
-                })
-        }
-    }
-
     private fun setAdListener(ad: RewardedAd) {
+        sharedPref.isAdShowFullScreen = true
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
-                isAdShowingFullScreen = false
+                sharedPref.isAdShowFullScreen = false
                 super.onAdDismissedFullScreenContent()
                 onAdDismissedFullScreenContent?.onAdDismissedFullScreenContent(rewardRequest)
             }
 
             override fun onAdShowedFullScreenContent() {
                 super.onAdShowedFullScreenContent()
-                isAdShowingFullScreen = true
                 rewardedAd = null
                 onAdShowedFullScreenContent?.onAdShowedFullScreenContent(rewardRequest)
                 load()
@@ -128,37 +105,10 @@ class RewardAdManager private constructor(
 
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 super.onAdFailedToShowFullScreenContent(p0)
-                isAdShowingFullScreen = false
+                sharedPref.isAdShowFullScreen = false
                 onAdFailedToShowFullScreenContent?.onAdFailedToShowFullScreenContent(rewardRequest)
                 load()
             }
-        }
-    }
-
-    class Builder(
-        private val context: Context,
-        private val sharedPref: AdmobConfigShared
-    ) {
-        private lateinit var interHighFloorId: String
-        private lateinit var interMediumFloorId: String
-        private lateinit var interAllPricesId: String
-        private lateinit var interstitialAds: String
-
-        fun interHighFloorId(id: String) = apply { interHighFloorId = id }
-
-        fun interMediumFloorId(id: String) = apply { interMediumFloorId = id }
-
-        fun interAllPricesId(id: String) = apply { interAllPricesId = id }
-
-        fun interstitialAds(id: String) = apply { interstitialAds = id }
-
-        fun build(): RewardAdManager {
-            val manager = RewardAdManager(context, sharedPref)
-            manager.highFloorId(interHighFloorId)
-            manager.mediumFloorId(interMediumFloorId)
-            manager.allPricesId(interAllPricesId)
-            manager.normalId(interstitialAds)
-            return manager
         }
     }
 
