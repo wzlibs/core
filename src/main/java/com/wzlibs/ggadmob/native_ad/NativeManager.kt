@@ -14,8 +14,7 @@ import com.wzlibs.ggadmob.managers.LoadingGapManager
 import dagger.hilt.android.EntryPointAccessors
 
 class NativeManager(
-    private val context: Context,
-    private val sharedPref: AdmobConfigShared
+    private val context: Context, private val sharedPref: AdmobConfigShared
 ) {
     private val loadingGapManager = LoadingGapManager(sharedPref)
     private val onNativeChangedList = ArrayList<IOnNativeChanged>()
@@ -57,19 +56,20 @@ class NativeManager(
             }).build()
         this.adLoader = adLoader
         adLoader.loadAds(
-            AdRequest.Builder().build(),
-            sharedPref.numberNativeNeedLoad - nativeAds.size
+            AdRequest.Builder().build(), sharedPref.numberNativeNeedLoad - nativeAds.size
         )
     }
 
     fun get(): NativeAd? {
-        return try {
-            val nativeAd = nativeAds[0]
-            nativeAds.remove(nativeAd)
-            nativeAd
-        } catch (e: Exception) {
-            null
+        try {
+            if (nativeAds.isNotEmpty()) {
+                val nativeAd = nativeAds[0]
+                nativeAds.remove(nativeAd)
+                return nativeAd
+            }
+        } catch (ignore: Exception) {
         }
+        return null
     }
 
     interface IOnNativeChanged {

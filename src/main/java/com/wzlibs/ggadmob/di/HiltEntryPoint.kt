@@ -9,6 +9,7 @@ import com.wzlibs.ggadmob.managers.ids.OpenAdsIdManager
 import com.wzlibs.ggadmob.managers.ids.RewardAdsIdManager
 import com.wzlibs.ggadmob.managers.ids.RewardInterstitialAdsIdManager
 import com.wzlibs.ggadmob.native_ad.NativeManager
+import com.wzlibs.ggadmob.reward_ad.RewardAdManager
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -25,4 +26,6 @@ interface HiltEntryPoint {
     fun admobConfigShared(): AdmobConfigShared
     fun nativeManager(): NativeManager
     fun interstitialAdManager(): InterstitialAdManager
+    fun rewardManager(): RewardAdManager
+
 }

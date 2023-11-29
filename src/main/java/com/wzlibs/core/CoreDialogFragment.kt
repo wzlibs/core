@@ -11,6 +11,10 @@ import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.viewbinding.ViewBinding
+import com.wzlibs.ggadmob.ad_configs.AdmobConfigShared
+import com.wzlibs.ggadmob.ad_interstitial.InterstitialAdManager
+import com.wzlibs.ggadmob.native_ad.NativeManager
+import com.wzlibs.ggadmob.reward_ad.RewardAdManager
 import org.greenrobot.eventbus.EventBus
 
 abstract class CoreDialogFragment<T : ViewBinding> : DialogFragment() {
@@ -21,7 +25,43 @@ abstract class CoreDialogFragment<T : ViewBinding> : DialogFragment() {
 
     open val fullScreen = false
 
-    open val transparentBackground: Boolean = false
+    open val transparentBackground: Boolean = true
+
+    open val registerNativeLister = false
+
+    val admobConfigShared: AdmobConfigShared
+        get() = (requireActivity() as CoreActivity<*>).admobConfigShared
+
+    val nativeManager: NativeManager
+        get() = (requireActivity() as CoreActivity<*>).nativeManager
+
+    val interstitialAdManager: InterstitialAdManager
+        get() = (requireActivity() as CoreActivity<*>).interstitialAdManager
+
+    val rewardAdManager: RewardAdManager
+        get() = (requireActivity() as CoreActivity<*>).rewardAdManager
+
+    private val nativeListener = object : NativeManager.IOnNativeChanged {
+        override fun onNativeChanged() {
+            this@CoreDialogFragment.onNativeChanged()
+        }
+    }
+
+    open fun onNativeChanged() {}
+
+    override fun onResume() {
+        super.onResume()
+        if (registerNativeLister) {
+            (requireActivity() as CoreActivity<*>).addNativeListener(nativeListener)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (registerNativeLister) {
+            (requireActivity() as CoreActivity<*>).removeNativeListener(nativeListener)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -32,7 +72,7 @@ abstract class CoreDialogFragment<T : ViewBinding> : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (registerEventBus) EventBus.getDefault().register(this)
-        initConfig(savedInstanceState)
+        initConfig(view, savedInstanceState)
         initObserver()
         initListener()
         initTask()
@@ -62,7 +102,7 @@ abstract class CoreDialogFragment<T : ViewBinding> : DialogFragment() {
 
     open fun initObserver() {}
 
-    open fun initConfig(savedInstanceState: Bundle?) {}
+    open fun initConfig(view: View, savedInstanceState: Bundle?) {}
 
     open fun initListener() {}
 
