@@ -2,6 +2,7 @@ package com.wzlibs.core
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
@@ -57,6 +58,7 @@ abstract class CoreActivity<T : ViewBinding> : LocaleAwareCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("log_debug", "onCreate: ")
         if (fullScreen) {
             window.fullScreen()
         }
