@@ -72,6 +72,7 @@ abstract class CoreDialogFragment<T : ViewBinding> : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (registerEventBus) EventBus.getDefault().register(this)
+        nativeManager.load()
         initConfig(view, savedInstanceState)
         initObserver()
         initListener()

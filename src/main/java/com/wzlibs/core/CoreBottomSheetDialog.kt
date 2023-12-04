@@ -56,6 +56,7 @@ abstract class CoreBottomSheetDialog<T : ViewBinding> : BottomSheetDialogFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (registerEventBus) EventBus.getDefault().register(this)
+        nativeManager.load()
         initObserver()
         initConfig()
         initListener()

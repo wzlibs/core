@@ -1,7 +1,6 @@
 package com.wzlibs.ggadmob.native_ad
 
 import android.content.Context
-import android.util.Log
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
@@ -45,13 +44,17 @@ class NativeManager(
 
         val adLoader =
             AdLoader.Builder(context, idsManager.getNormalId()).forNativeAd { ad: NativeAd ->
-                nativeAds.add(ad)
-                notifyToUpdate()
-                loadingGapManager.resetGap()
+                synchronized(this){
+                    nativeAds.add(ad)
+                    notifyToUpdate()
+                    loadingGapManager.resetGap()
+                }
             }.withAdListener(object : AdListener() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    loadingGapManager.updateGap()
-                    notifyToUpdate()
+                    synchronized(this@NativeManager){
+                        loadingGapManager.updateGap()
+                        notifyToUpdate()
+                    }
                 }
             }).build()
         this.adLoader = adLoader
@@ -62,10 +65,12 @@ class NativeManager(
 
     fun get(): NativeAd? {
         try {
-            if (nativeAds.isNotEmpty()) {
-                val nativeAd = nativeAds[0]
-                nativeAds.remove(nativeAd)
-                return nativeAd
+            synchronized(this) {
+                if (nativeAds.isNotEmpty()) {
+                    val nativeAd = nativeAds[0]
+                    nativeAds.remove(nativeAd)
+                    return nativeAd
+                }
             }
         } catch (ignore: Exception) {
         }

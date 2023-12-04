@@ -41,20 +41,6 @@ abstract class CoreFragment<T : ViewBinding> : Fragment() {
 
     open fun onNativeChanged() {}
 
-    override fun onResume() {
-        super.onResume()
-        if (registerNativeLister) {
-            (requireActivity() as CoreActivity<*>).addNativeListener(nativeListener)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (registerNativeLister) {
-            (requireActivity() as CoreActivity<*>).removeNativeListener(nativeListener)
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
@@ -63,15 +49,22 @@ abstract class CoreFragment<T : ViewBinding> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (registerEventBus) EventBus.getDefault().register(this)
+        nativeManager.load()
         initConfig(view, savedInstanceState)
         initObserver()
         initListener()
         initTask()
+        if (registerEventBus) EventBus.getDefault().register(this)
+        if (registerNativeLister) {
+            (requireActivity() as CoreActivity<*>).addNativeListener(nativeListener)
+        }
     }
 
     override fun onDestroyView() {
         if (registerEventBus) EventBus.getDefault().unregister(this)
+        if (registerNativeLister) {
+            (requireActivity() as CoreActivity<*>).removeNativeListener(nativeListener)
+        }
         release()
         super.onDestroyView()
     }

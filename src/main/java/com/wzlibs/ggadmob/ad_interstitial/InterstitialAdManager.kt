@@ -79,8 +79,8 @@ class InterstitialAdManager constructor(
             onTransition.invoke()
             load()
         } else {
-            setAdListener(ad, onTransition)
             if (shouldShow()) {
+                setAdListener(ad, onTransition)
                 ad.show(activity)
             } else {
                 onTransition.invoke()
